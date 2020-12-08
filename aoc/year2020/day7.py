@@ -1,5 +1,7 @@
 # coding: utf8
 
+import sys
+
 from aoc import aoc
 
 # Day 7 is decidedly more complex than the previous days.
@@ -10,7 +12,6 @@ class Problem(aoc.Problem):
     def solve(self, part):
         # map of bag colour to other bag colours that can be held
         all_bags = {}
-        counter = 0
 
         # parse the dataset first
         for bag in self.dataset_lines:
@@ -26,22 +27,18 @@ class Problem(aoc.Problem):
                 inner_bag_colour = " ".join(bags[index + 1 : index + 3])
                 all_bags[bag_colour][inner_bag_colour] = int(inner_bag_count)
 
-        # bags that can _directly_ contain shiny gold bags go here.
-        # Sets are particularly useful because checks are O(1).
-        # can_has_shiny_gold = set(k for k, v in all_bags.items() if "shiny gold" in v)
-
         # Now, we employ some recursion to do the trick.
         def has_shiny_gold(bag):
             nonlocal all_bags
-            # nonlocal can_has_shiny_gold
-            nonlocal counter
 
-            for inner_bag in all_bags[bag]:
+            return any(b=="shiny gold" or has_shiny_gold(b) for b in all_bags[bag])
 
-                if inner_bag == "shiny gold":
-                    return True
-                else:
-                    # and so on...
-                    return has_shiny_gold(inner_bag)
+        def count_in_shiny_gold(bag="shiny gold"):
+            nonlocal all_bags
+            
+            return sum(bc + (bc * count_in_shiny_gold(b)) for b, bc in all_bags[bag].items())
 
-        return [has_shiny_gold(b) for b in all_bags].count(True)
+        if part == 1:
+            return sum(has_shiny_gold(b) for b in all_bags)
+        elif part == 2:
+            return count_in_shiny_gold()
