@@ -6,6 +6,7 @@ import argparse
 import importlib
 import pathlib
 import sys
+import timeit
 
 DATASET_PATH = pathlib.Path(__file__).parent / "datasets"
 YEARS = ", ".join([i.name[:4] for i in DATASET_PATH.glob("*") if i.is_dir()])
@@ -57,10 +58,21 @@ def main(args=sys.argv[1:]):
         "year", action="store", help=f"AOC year (available: {YEARS})", type=int
     )
     parser.add_argument("day", action="store", help="day to solve for (1-25)", type=int)
+    parser.add_argument(
+        "-p",
+        "--part",
+        action="store",
+        help="which part to solve for",
+        type=int,
+        choices=[1, 2],
+        default=1,
+    )
     options = parser.parse_args(args)
 
     problem = importlib.import_module(
         f"aoc.year{options.year}.day{options.day}"
     ).Problem(options.year, options.day)
-    for p in (1, 2):
-        print(f"Solution to part {p}: {problem.solve(p)}")
+    time_taken = timeit.timeit(
+        lambda: print(f"Solution: {problem.solve(options.part)}"), number=1
+    )
+    print(f"Time taken: {time_taken} seconds")
