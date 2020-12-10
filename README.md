@@ -81,3 +81,7 @@ Part 2 involved more looping (also like Day 1).
 
 (Part 1) Your puzzle answer was 57195069.
 (Part 2) Your puzzle answer was 7409241.
+
+### [Day 10](aoc/year2020/day10.py)
+
+WIP
